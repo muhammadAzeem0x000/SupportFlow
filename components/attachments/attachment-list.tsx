@@ -1,4 +1,28 @@
 "use client";
-import { useRef,useState } from "react"; import { File,Upload } from "lucide-react"; import { toast } from "sonner"; import { Button } from "@/components/ui/button"; import { validateAttachment } from "@/lib/validation/tickets";
-type Attachment={id:string;original_filename:string;size_bytes:number};
-export function AttachmentList({ticketId,initial}:{ticketId:string;initial:Attachment[]}){const [items,setItems]=useState(initial);const [uploading,setUploading]=useState(false);const input=useRef<HTMLInputElement>(null);async function upload(){const file=input.current?.files?.[0];if(!file)return;const issue=validateAttachment(file);if(issue){toast.error(issue);return;}setUploading(true);const form=new FormData();form.set("file",file);const response=await fetch(`/api/tickets/${ticketId}/attachments`,{method:"POST",body:form});const result=await response.json() as {attachment?:Attachment;error?:{message:string}};if(!response.ok||!result.attachment)toast.error(result.error?.message??"Upload failed.");else{setItems(current=>[...current,result.attachment!]);toast.success("Attachment uploaded");if(input.current)input.current.value="";}setUploading(false);}return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><h2 className="font-semibold">Attachments</h2><span className="text-xs text-slate-400">Private · signed links</span></div><div className="mt-4 space-y-2">{items.length===0&&<p className="text-sm text-slate-400">No files attached.</p>}{items.map(item=><a key={item.id} target="_blank" href={`/api/tickets/${ticketId}/attachments/${item.id}`} className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-sm hover:border-indigo-300"><File className="h-4 w-4 text-indigo-500"/><span className="min-w-0 flex-1 truncate font-medium">{item.original_filename}</span><span className="text-xs text-slate-400">{Math.ceil(item.size_bytes/1024)} KB</span></a>)}</div><div className="mt-4 flex gap-2"><input ref={input} type="file" accept=".png,.jpg,.jpeg,.pdf,.txt" className="min-w-0 flex-1 rounded-xl border border-slate-300 p-2 text-xs"/><Button type="button" disabled={uploading} onClick={upload} className="shrink-0"><Upload className="mr-2 h-4 w-4"/>{uploading?"Uploading…":"Upload"}</Button></div></section>}
+
+import { useRef, useState } from "react";
+import { File, Paperclip, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { validateAttachment } from "@/lib/validation/tickets";
+
+type Attachment = { id: string; original_filename: string; size_bytes: number };
+export function AttachmentList({ ticketId, initial }: { ticketId: string; initial: Attachment[] }) {
+  const [items, setItems] = useState(initial);
+  const [uploading, setUploading] = useState(false);
+  const [selectedName, setSelectedName] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  async function upload() {
+    const file = input.current?.files?.[0];
+    if (!file) return;
+    const issue = validateAttachment(file); if (issue) { toast.error(issue); return; }
+    setUploading(true);
+    const form = new FormData(); form.set("file", file);
+    const response = await fetch(`/api/tickets/${ticketId}/attachments`, { method: "POST", body: form });
+    const result = await response.json() as { attachment?: Attachment; error?: { message: string } };
+    if (!response.ok || !result.attachment) toast.error(result.error?.message ?? "Upload failed.");
+    else { setItems((current) => [...current, result.attachment!]); toast.success("Attachment uploaded"); if (input.current) input.current.value = ""; setSelectedName(""); }
+    setUploading(false);
+  }
+  return <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/90 shadow-[0_12px_40px_rgba(15,23,42,0.07)] backdrop-blur"><div className="flex items-center justify-between border-b border-slate-100 p-5"><div><h2 className="font-semibold text-slate-900">Attachments</h2><p className="mt-1 text-xs text-slate-500">Private files with secure links</p></div><span className="rounded-xl bg-indigo-50 p-2 text-indigo-600"><Paperclip className="h-4 w-4" /></span></div><div className="space-y-2 p-5">{items.length === 0 && <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 py-6 text-center text-sm text-slate-400">No files attached yet.</div>}{items.map((item) => <a key={item.id} target="_blank" href={`/api/tickets/${ticketId}/attachments/${item.id}`} className="group flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-sm transition hover:border-indigo-300 hover:bg-indigo-50/40"><span className="rounded-lg bg-slate-100 p-2 text-slate-500 transition group-hover:bg-white group-hover:text-indigo-600"><File className="h-4 w-4" /></span><span className="min-w-0 flex-1 truncate font-medium text-slate-700">{item.original_filename}</span><span className="text-[11px] font-medium text-slate-400">{Math.ceil(item.size_bytes / 1024)} KB</span></a>)}</div><div className="border-t border-slate-100 bg-slate-50/50 p-4"><input ref={input} type="file" accept=".png,.jpg,.jpeg,.pdf,.txt" onChange={(event) => setSelectedName(event.target.files?.[0]?.name ?? "")} className="sr-only" /><button type="button" onClick={() => input.current?.click()} className="mb-3 flex w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white px-3 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-indigo-400 hover:text-indigo-600">{selectedName || "Choose a file"}</button><Button type="button" disabled={uploading || !selectedName} onClick={upload} className="w-full"><Upload className="mr-2 h-4 w-4" />{uploading ? "Uploading..." : "Upload attachment"}</Button></div></section>;
+}
