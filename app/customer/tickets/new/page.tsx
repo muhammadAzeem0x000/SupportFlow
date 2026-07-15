@@ -1,0 +1,2 @@
+import { PageHeader } from "@/components/dashboard/page-header"; import { NewTicketForm } from "@/components/tickets/new-ticket-form"; import { requireMember } from "@/lib/auth/current-member";
+export default async function NewTicketPage(){await requireMember(["customer"]);return <div className="mx-auto max-w-3xl"><PageHeader eyebrow="New request" title="How can we help?" description="Share the details and the support team will take it from here."/><NewTicketForm/></div>}

@@ -1,0 +1,2 @@
+-- Auth users and relational demo records are created by `npm run seed`.
+-- The script uses the server-only service role key and is safe to rerun.

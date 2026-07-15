@@ -1,0 +1,2 @@
+import { notFound } from "next/navigation"; import { TicketDetail } from "@/components/tickets/ticket-detail"; import { requireMember } from "@/lib/auth/current-member"; import { getAgents,getTicket } from "@/lib/tickets/queries";
+export default async function StaffTicketPage({params}:{params:Promise<{ticketId:string}>}){const member=await requireMember(["admin","agent"]);const {ticketId}=await params;const [ticket,agents]=await Promise.all([getTicket(ticketId),getAgents()]);if(!ticket)notFound();return <TicketDetail ticket={ticket} member={member} agents={agents}/>}

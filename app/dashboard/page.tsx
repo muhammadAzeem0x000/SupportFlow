@@ -1,0 +1,9 @@
+import { AlertTriangle, CircleCheck, CircleDot, Inbox, UserRoundCheck } from "lucide-react";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { TicketCharts } from "@/components/charts/ticket-charts";
+import { TicketTable } from "@/components/tickets/ticket-table";
+import { requireMember } from "@/lib/auth/current-member";
+import { getDashboardStats, getTickets } from "@/lib/tickets/queries";
+
+export default async function DashboardPage(){ const member=await requireMember(["admin","agent"]); const [stats,recent]=await Promise.all([getDashboardStats(),getTickets(member,{q:"",view:member.role==="agent"?"mine":"all",page:1},5)]); const cards=member.role==="admin"?[["Open tickets",stats.open,CircleDot,"indigo"],["In progress",stats.inProgress,Inbox,"amber"],["Resolved",stats.resolved,CircleCheck,"emerald"],["Overdue",stats.overdue,AlertTriangle,"rose"]] as const:[["My assigned",stats.myAssigned,UserRoundCheck,"indigo"],["My open",stats.myOpen,CircleDot,"amber"],["My overdue",stats.myOverdue,AlertTriangle,"rose"],["Unassigned",stats.unassigned,Inbox,"emerald"]] as const; return <><PageHeader eyebrow={member.organizationName} title={`Good evening, ${member.fullName.split(" ")[0]}`} description={member.role==="admin"?"Here’s the health of your support operation.":"Here’s what needs your attention today."}/><div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(([label,value,icon,tone])=><StatCard key={label} label={label} value={value} icon={icon} tone={tone}/>)}</div>{member.role==="admin"&&<div className="mb-6"><TicketCharts status={stats.byStatus} priority={stats.byPriority}/></div>}<div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-semibold">Recent tickets</h2></div><TicketTable tickets={recent.tickets} basePath="/dashboard/tickets"/></>; }

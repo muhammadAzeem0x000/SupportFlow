@@ -1,0 +1,2 @@
+import { describe,expect,it } from "vitest"; import { parseTicketFilters } from "@/lib/tickets/filters";
+describe("filter parsing",()=>{it("parses valid query parameters",()=>expect(parseTicketFilters({q:" login ",status:"open",priority:"high",view:"mine",page:"2"})).toMatchObject({q:"login",status:"open",priority:"high",view:"mine",page:2}));it("falls back safely for invalid values",()=>expect(parseTicketFilters({status:"hacked",page:"-1",view:"other"})).toMatchObject({view:"all",page:1}))});
