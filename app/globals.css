@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f6fb;
-  --foreground: #101828;
-  --brand: #5b5bd6;
-  --brand-deep: #4338ca;
-  --surface: rgba(255, 255, 255, 0.88);
+  --background: #f5f4f0;
+  --foreground: #18202b;
+  --brand: #3157d5;
+  --brand-deep: #2444b4;
+  --surface: #ffffff;
+  --line: #deded8;
 }
 
 @theme inline {
@@ -19,10 +20,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  background-image:
-    radial-gradient(circle at 15% -10%, rgba(99, 102, 241, 0.12), transparent 32rem),
-    radial-gradient(circle at 90% 15%, rgba(14, 165, 233, 0.08), transparent 28rem);
-  background-attachment: fixed;
 }
 
 button, a, input, select, textarea { outline-color: var(--brand); }
@@ -34,13 +31,13 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  border-color: #3157d5;
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.1);
   outline: none;
 }
 
 button:focus-visible, a:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #3157d5;
   outline-offset: 3px;
 }
 
@@ -52,3 +49,10 @@ button:focus-visible, a:focus-visible {
 }
 
 .select-popover[data-state="open"] { animation: select-enter 140ms ease-out; }
+
+.login-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}

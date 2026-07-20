@@ -18,7 +18,7 @@ export function TicketControls({ ticketId, role, status, priority, assignedAgent
     router.refresh();
   }
   const next = allowedNextStatuses(role, status);
-  return <div className="grid min-w-full gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 sm:min-w-[28rem] sm:grid-cols-2 lg:min-w-[34rem]">
+  return <div className="grid min-w-full gap-3 border-l-2 border-[#3157d5] bg-[#f7f8fb] p-3 sm:min-w-[28rem] sm:grid-cols-2 lg:min-w-[34rem]">
     {role === "admin" && <><label className="space-y-1.5"><span className="px-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Assigned agent</span><SelectField ariaLabel="Assigned agent" value={assignedAgentId ?? "__unassigned__"} onValueChange={(value) => void patch("assignment", { agentId: value === "__unassigned__" ? null : value })} options={[{ value: "__unassigned__", label: "Unassigned" }, ...agents.map((agent) => ({ value: agent.id, label: agent.name }))]} /></label><label className="space-y-1.5"><span className="px-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Priority</span><SelectField ariaLabel="Priority" value={priority} onValueChange={(value) => void patch("priority", { priority: value })} options={PRIORITIES.map((value) => ({ value, label: titleCase(value) }))} /></label></>}
     {next.length > 0 && <label className="space-y-1.5"><span className="px-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Move ticket to</span><SelectField ariaLabel="Status" placeholder="Choose next status" onValueChange={(value) => void patch("status", { status: value })} options={next.map((value) => ({ value, label: titleCase(value) }))} /></label>}
   </div>;
